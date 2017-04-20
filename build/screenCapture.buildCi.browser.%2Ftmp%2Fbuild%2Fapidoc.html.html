@@ -1,0 +1,278 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/raml2html/raml2html">raml2html (v6.1.1)</a>
+</h1>
+<h4>RAML to HTML documentation generator</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.raml2html">module raml2html</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.raml2html.getConfigForTemplate">
+            function <span class="apidocSignatureSpan">raml2html.</span>getConfigForTemplate
+            <span class="apidocSignatureSpan">(mainTemplate, templatesPath)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.raml2html.getConfigForTheme">
+            function <span class="apidocSignatureSpan">raml2html.</span>getConfigForTheme
+            <span class="apidocSignatureSpan">(theme, programArguments)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.raml2html.render">
+            function <span class="apidocSignatureSpan">raml2html.</span>render
+            <span class="apidocSignatureSpan">(source, config)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.raml2html" id="apidoc.module.raml2html">module raml2html</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.raml2html.getConfigForTemplate" id="apidoc.element.raml2html.getConfigForTemplate">
+        function <span class="apidocSignatureSpan">raml2html.</span>getConfigForTemplate
+        <span class="apidocSignatureSpan">(mainTemplate, templatesPath)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function getConfigForTemplate(mainTemplate, templatesPath) {
+  return {
+    processRamlObj(ramlObj, config) {
+      const renderer = new marked.Renderer();
+      renderer.table = function(thead, tbody) {
+        // Render Bootstrap style tables
+        return `&lt;table class="table"&gt;&lt;thead&gt;${thead}&lt;/thead&gt;&lt;tbody&gt;${tbody}&lt;/tbody&gt;&lt;/table&gt;`;
+      };
+
+      // Setup the Nunjucks environment with the markdown parser
+      const env = nunjucks.configure(templatesPath, { autoescape: false });
+
+      if (config.setupNunjucks) {
+        config.setupNunjucks(env);
+      }
+
+      markdown.register(env, md =&gt; marked(md, { renderer }));
+
+      ramlObj.isStandardType = function(type) {
+        if (typeof type === 'object') {
+          return false;
+        }
+        return type &amp;&amp; type.indexOf('{') === -1 &amp;&amp; type.indexOf('&lt;') === -1;
+      };
+
+      // Render the main template using the raml object and fix the double quotes
+      let html = env.render(mainTemplate, ramlObj);
+      html = html.replace(/&amp;quot;/g, '"');
+
+      // Return the promise with the html
+      return new Promise(resolve =&gt; {
+        resolve(html);
+      });
+    },
+
+    postProcessHtml(html) {
+      // Minimize the generated html and return the promise with the result
+      const minimize = new Minimize({ quotes: true });
+
+      return new Promise((resolve, reject) =&gt; {
+        minimize.parse(html, (error, result) =&gt; {
+          if (error) {
+            reject(new Error(error));
+          } else {
+            resolve(result);
+          }
+        });
+      });
+    },
+  };
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+### As a library
+
+#### Using the default theme, different themes, or your own Nunjucks templates
+```javascript
+const raml2html = require('raml2html');
+const configWithDefaultTheme = raml2html.getConfigForTheme();
+const configForDifferentTheme = raml2html.getConfigForTheme('raml2html-markdown-theme');
+const configWithCustomTemplate = raml2html.<span class="apidocCodeKeywordSpan">getConfigForTemplate</span>('my-custom-template
+.nunjucks', __dirname);
+
+// source can either be a filename, url, or parsed RAML object
+raml2html.render(source, configWithDefaultTheme).then(function(result) {
+  // Save the result to a file or do something else with the result
+}, function(error) {
+  // Output error
+});
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.raml2html.getConfigForTheme" id="apidoc.element.raml2html.getConfigForTheme">
+        function <span class="apidocSignatureSpan">raml2html.</span>getConfigForTheme
+        <span class="apidocSignatureSpan">(theme, programArguments)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function getConfigForTheme(theme, programArguments) {
+  if (!theme) {
+    theme = 'raml2html-default-theme';
+  }
+
+  try {
+    // See if the theme supplies its own config object (or function that creates this object), and return it
+    const config = require(theme);
+
+    // If it's a function then call it with the program arguments
+    if (typeof config === 'function') {
+      return config(programArguments);
+    }
+
+    // Otherwise we assume it's a config object (default behavior)
+    return config;
+  } catch (err) {
+    // Nope, forward to getConfigForTemplate
+    const templatesPath = path.dirname(
+      require.resolve(`${theme}/package.json`)
+    );
+    return getConfigForTemplate('index.nunjucks', templatesPath);
+  }
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+```
+
+### As a library
+
+#### Using the default theme, different themes, or your own Nunjucks templates
+```javascript
+const raml2html = require('raml2html');
+const configWithDefaultTheme = raml2html.<span class="apidocCodeKeywordSpan">getConfigForTheme</span>();
+const configForDifferentTheme = raml2html.getConfigForTheme('raml2html-markdown-theme');
+const configWithCustomTemplate = raml2html.getConfigForTemplate('my-custom-template.nunjucks', __dirname);
+
+// source can either be a filename, url, or parsed RAML object
+raml2html.render(source, configWithDefaultTheme).then(function(result) {
+  // Save the result to a file or do something else with the result
+}, function(error) {
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.raml2html.render" id="apidoc.element.raml2html.render">
+        function <span class="apidocSignatureSpan">raml2html.</span>render
+        <span class="apidocSignatureSpan">(source, config)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function render(source, config) {
+  config = config || {};
+  config.raml2HtmlVersion = pjson.version;
+
+  return raml2obj.parse(source).then(ramlObj =&gt; {
+    ramlObj.config = config;
+
+    if (config.processRamlObj) {
+      return config.processRamlObj(ramlObj, config).then(html =&gt; {
+        if (config.postProcessHtml) {
+          return config.postProcessHtml(html);
+        }
+        return html;
+      });
+    }
+
+    return ramlObj;
+  });
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+```javascript
+const raml2html = require('raml2html');
+const configWithDefaultTheme = raml2html.getConfigForTheme();
+const configForDifferentTheme = raml2html.getConfigForTheme('raml2html-markdown-theme');
+const configWithCustomTemplate = raml2html.getConfigForTemplate('my-custom-template.nunjucks', __dirname);
+
+// source can either be a filename, url, or parsed RAML object
+raml2html.<span class="apidocCodeKeywordSpan">render</span>(source, configWithDefaultTheme).then(function(result) {
+  // Save the result to a file or do something else with the result
+}, function(error) {
+  // Output error
+});
+```
+
+#### Using your own processing function, for full control over the whole rendering process
+...</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
