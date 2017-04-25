@@ -1,6 +1,6 @@
 # npmdoc-raml2html
 
-#### api documentation for  [raml2html (v6.1.1)](https://github.com/raml2html/raml2html)  [![npm package](https://img.shields.io/npm/v/npmdoc-raml2html.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-raml2html) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-raml2html.svg)](https://travis-ci.org/npmdoc/node-npmdoc-raml2html)
+#### basic api documentation for  [raml2html (v6.2.0)](https://github.com/raml2html/raml2html)  [![npm package](https://img.shields.io/npm/v/npmdoc-raml2html.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-raml2html) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-raml2html.svg)](https://travis-ci.org/npmdoc/node-npmdoc-raml2html)
 
 #### RAML to HTML documentation generator
 
@@ -21,11 +21,11 @@
 ```json
 
 {
-    "name": "raml2html",
-    "description": "RAML to HTML documentation generator",
-    "version": "6.1.1",
     "author": {
         "name": "Kevin Renskers"
+    },
+    "bin": {
+        "raml2html": "./bin/raml2html"
     },
     "bugs": {
         "url": "https://github.com/raml2html/raml2html/issues"
@@ -39,35 +39,50 @@
         "raml2obj": "5.x",
         "yargs": "7.1.x"
     },
+    "description": "RAML to HTML documentation generator",
     "devDependencies": {
         "eslint": "3.19.x",
         "eslint-plugin-prettier": "2.0.x",
         "prettier": "1.x"
     },
+    "directories": {},
+    "dist": {
+        "shasum": "9fcaab5b378e528f8e2694daa9df55fd6d9c3ac4",
+        "tarball": "https://registry.npmjs.org/raml2html/-/raml2html-6.2.0.tgz"
+    },
+    "engines": {
+        "node": ">=4"
+    },
+    "files": [
+        "index.js",
+        "bin/raml2html"
+    ],
+    "gitHead": "efad9a4e0863f5aa12317616c4370ad20a4fdbbf",
     "homepage": "https://github.com/raml2html/raml2html",
     "keywords": [
         "RAML"
     ],
     "license": "MIT",
     "main": "index.js",
+    "maintainers": [
+        {
+            "name": "mixedcase"
+        },
+        {
+            "name": "nickwb"
+        }
+    ],
+    "name": "raml2html",
+    "optionalDependencies": {},
+    "preferGlobal": true,
     "repository": {
         "type": "git",
         "url": "git://github.com/raml2html/raml2html.git"
     },
-    "preferGlobal": true,
     "scripts": {
         "lint": "eslint . --fix"
     },
-    "bin": {
-        "raml2html": "./bin/raml2html"
-    },
-    "files": [
-        "index.js",
-        "bin/raml2html"
-    ],
-    "engines": {
-        "node": ">=4"
-    }
+    "version": "6.2.0"
 }
 ```
 
