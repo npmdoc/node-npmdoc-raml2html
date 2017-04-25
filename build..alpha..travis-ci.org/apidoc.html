@@ -51,7 +51,7 @@
 
         href="https://github.com/raml2html/raml2html"
 
-    >raml2html (v6.1.1)</a>
+    >raml2html (v6.2.0)</a>
 </h1>
 <h4>RAML to HTML documentation generator</h4>
 <div class="apidocSectionDiv"><a
@@ -65,7 +65,7 @@
 
             <a class="apidocElementLiA" href="#apidoc.element.raml2html.getConfigForTemplate">
             function <span class="apidocSignatureSpan">raml2html.</span>getConfigForTemplate
-            <span class="apidocSignatureSpan">(mainTemplate, templatesPath)</span>
+            <span class="apidocSignatureSpan">(mainTemplate)</span>
             </a>
 
         </li>
@@ -99,11 +99,14 @@
     <h2>
         <a href="#apidoc.element.raml2html.getConfigForTemplate" id="apidoc.element.raml2html.getConfigForTemplate">
         function <span class="apidocSignatureSpan">raml2html.</span>getConfigForTemplate
-        <span class="apidocSignatureSpan">(mainTemplate, templatesPath)</span>
+        <span class="apidocSignatureSpan">(mainTemplate)</span>
         </a>
     </h2>
     <ul>
-    <li>description and source-code<pre class="apidocCodePre">function getConfigForTemplate(mainTemplate, templatesPath) {
+    <li>description and source-code<pre class="apidocCodePre">function getConfigForTemplate(mainTemplate) {
+  const templatesPath = path.dirname(fs.realpathSync(mainTemplate));
+  const templateFile = path.basename(fs.realpathSync(mainTemplate));
+
   return {
     processRamlObj(ramlObj, config) {
       const renderer = new marked.Renderer();
@@ -129,7 +132,7 @@
       };
 
       // Render the main template using the raml object and fix the double quotes
-      let html = env.render(mainTemplate, ramlObj);
+      let html = env.render(templateFile, ramlObj);
       html = html.replace(/&#x26;quot;/g, &#x27;&#x22;&#x27;);
 
       // Return the promise with the html
@@ -162,8 +165,8 @@
 const raml2html = require(&#x27;raml2html&#x27;);
 const configWithDefaultTheme = raml2html.getConfigForTheme();
 const configForDifferentTheme = raml2html.getConfigForTheme(&#x27;raml2html-markdown-theme&#x27;);
-const configWithCustomTemplate = raml2html.<span class="apidocCodeKeywordSpan">getConfigForTemplate</span>(&#x27;my-custom-template
-.nunjucks&#x27;, __dirname);
+const configWithCustomTemplate = raml2html.<span class="apidocCodeKeywordSpan">getConfigForTemplate</span>(&#x27;~/path/to/my-custom
+-template.nunjucks&#x27;);
 
 // source can either be a filename, url, or parsed RAML object
 raml2html.render(source, configWithDefaultTheme).then(function(result) {
@@ -204,7 +207,7 @@ raml2html.render(source, configWithDefaultTheme).then(function(result) {
     const templatesPath = path.dirname(
       require.resolve(`${theme}/package.json`)
     );
-    return getConfigForTemplate(&#x27;index.nunjucks&#x27;, templatesPath);
+    return getConfigForTemplate(path.join(templatesPath, &#x27;index.nunjucks&#x27;));
   }
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
@@ -217,7 +220,7 @@ raml2html.render(source, configWithDefaultTheme).then(function(result) {
 const raml2html = require(&#x27;raml2html&#x27;);
 const configWithDefaultTheme = raml2html.<span class="apidocCodeKeywordSpan">getConfigForTheme</span>();
 const configForDifferentTheme = raml2html.getConfigForTheme(&#x27;raml2html-markdown-theme&#x27;);
-const configWithCustomTemplate = raml2html.getConfigForTemplate(&#x27;my-custom-template.nunjucks&#x27;, __dirname);
+const configWithCustomTemplate = raml2html.getConfigForTemplate(&#x27;~/path/to/my-custom-template.nunjucks&#x27;);
 
 // source can either be a filename, url, or parsed RAML object
 raml2html.render(source, configWithDefaultTheme).then(function(result) {
@@ -255,21 +258,21 @@ raml2html.render(source, configWithDefaultTheme).then(function(result) {
   });
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-```javascript
-const raml2html = require(&#x27;raml2html&#x27;);
-const configWithDefaultTheme = raml2html.getConfigForTheme();
-const configForDifferentTheme = raml2html.getConfigForTheme(&#x27;raml2html-markdown-theme&#x27;);
-const configWithCustomTemplate = raml2html.getConfigForTemplate(&#x27;my-custom-template.nunjucks&#x27;, __dirname);
+    if (typeof type === &#x27;object&#x27;) {
+      return false;
+    }
+    return type &#x26;&#x26; type.indexOf(&#x27;{&#x27;) === -1 &#x26;&#x26; type.indexOf(&#x27;&#x3c;&#x27;) === -1;
+  };
 
-// source can either be a filename, url, or parsed RAML object
-raml2html.<span class="apidocCodeKeywordSpan">render</span>(source, configWithDefaultTheme).then(function(result) {
-  // Save the result to a file or do something else with the result
-}, function(error) {
-  // Output error
-});
-```
+  // Render the main template using the raml object and fix the double quotes
+  let html = env.<span class="apidocCodeKeywordSpan">render</span>(templateFile, ramlObj);
+  html = html.replace(/&#x26;quot;/g, &#x27;&#x22;&#x27;);
 
-#### Using your own processing function, for full control over the whole rendering process
+  // Return the promise with the html
+  return new Promise(resolve =&#x3e; {
+    resolve(html);
+  });
+},
 ...</pre></li>
     </ul>
 
